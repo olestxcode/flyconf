@@ -135,7 +135,15 @@ class DefaultFlyconfInstance implements FlyconfInstance {
             Object value = propertyMap.get(formatProperty(path, property));
 
             if (methodType.equals(Optional.class)) {
-                return Optional.ofNullable(value);
+                if (value == null) {
+                    return Optional.empty();
+                }
+
+                if (methodType.isAssignableFrom(value.getClass())) {
+                    return Optional.of(value);
+                }
+
+                return Optional.of(valueParserMap.get(methodType).apply(value.toString()));
             }
 
             if (value == null && method.getAnnotation(Mandatory.class) != null) {
