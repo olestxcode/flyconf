@@ -1,0 +1,50 @@
+plugins {
+    id 'base'
+}
+
+group 'com.github.olestxcode.flyconf'
+version '0.0.1'
+
+def javaVersion = JavaVersion.VERSION_19.getMajorVersion().toInteger()
+
+allprojects {
+    pluginManager.withPlugin('org.gradle.java') {
+        plugin ->
+            java {
+                toolchain {
+                    languageVersion = JavaLanguageVersion.of(javaVersion)
+                    vendor = JvmVendorSpec.matching('Eclipse Adoptium')
+                }
+            }
+            test {
+                useJUnitPlatform()
+            }
+            processResources {
+                expand projectVersion: rootProject.version
+            }
+    }
+
+    pluginManager.withPlugin('java-library') {
+        plugin ->
+            dependencies {
+                dependencies {
+                    compileOnly 'org.jetbrains:annotations:24.0.1'
+                    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+                }
+                test {
+                    useJUnitPlatform()
+                    testLogging {
+                        events "passed", "skipped", "failed"
+                    }
+                }
+            }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    tasks.withType(JavaCompile) {
+        options.release.set(javaVersion)
+    }
+}

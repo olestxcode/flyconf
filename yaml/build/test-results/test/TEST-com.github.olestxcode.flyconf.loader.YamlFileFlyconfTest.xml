@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.github.olestxcode.flyconf.loader.YamlFileFlyconfTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-03-17T13:41:01" hostname="olestonix-RedmiBook-14" time="0.072">
+  <properties/>
+  <testcase name="testPropertiesConfigurationLoader()" classname="com.github.olestxcode.flyconf.loader.YamlFileFlyconfTest" time="0.072"/>
+  <system-out><![CDATA[ArrayList
+{key1=val1, myprop.val=mypropval, path.k2=1, path.duration=PT5S, ints=[5, 9, 12], prop=propVal, myList=[e1, e2, e3], path.k1=v1}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
