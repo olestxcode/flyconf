@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.github.olestxcode.flyconf.loader.properties.PropertiesFileFlyconfTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-03-17T14:40:16" hostname="olestonix-RedmiBook-14" time="0.038">
-  <properties/>
-  <testcase name="testPropertiesConfigurationLoader()" classname="com.github.olestxcode.flyconf.loader.properties.PropertiesFileFlyconfTest" time="0.038"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
