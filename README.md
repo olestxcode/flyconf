@@ -110,4 +110,4 @@ public interface MyReloadableConfig extends Reloadable {
 }
 ```
 
-Then you will be able to call `MyReloadableConfig#reload` method which automatically reload all settings from source (file).
+Then you will be able to call `MyReloadableConfig#reload` method which automatically reloads all settings from its source (file).
