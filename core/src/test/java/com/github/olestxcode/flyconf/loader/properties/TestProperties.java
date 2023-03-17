@@ -1,9 +1,6 @@
 package com.github.olestxcode.flyconf.loader.properties;
 
-import com.github.olestxcode.flyconf.annotation.Configuration;
-import com.github.olestxcode.flyconf.annotation.Mandatory;
-import com.github.olestxcode.flyconf.annotation.MultiValue;
-import com.github.olestxcode.flyconf.annotation.Property;
+import com.github.olestxcode.flyconf.annotation.*;
 import com.github.olestxcode.flyconf.loader.Reloadable;
 
 import java.util.List;
@@ -29,4 +26,7 @@ public interface TestProperties extends Reloadable {
 
     @Mandatory
     String mandatoryProp();
+
+    @DefaultValue("Default")
+    String def();
 }

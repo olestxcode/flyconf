@@ -1,16 +1,11 @@
 package com.github.olestxcode.flyconf;
 
-import com.github.olestxcode.flyconf.annotation.Configuration;
-import com.github.olestxcode.flyconf.annotation.Mandatory;
-import com.github.olestxcode.flyconf.annotation.MultiValue;
-import com.github.olestxcode.flyconf.annotation.Property;
+import com.github.olestxcode.flyconf.adapter.IdentityAdapter;
+import com.github.olestxcode.flyconf.annotation.*;
 import com.github.olestxcode.flyconf.exception.InvalidConfigurationException;
 import com.github.olestxcode.flyconf.loader.PropertyMapLoader;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.*;
@@ -66,15 +61,29 @@ class DefaultFlyconfInstance implements FlyconfInstance {
         valueParserMap.put(ZoneOffset.class, ZoneOffset::of);
     }
 
+    private Convention.ConventionAdapter adapter = new IdentityAdapter();
+
     @Override
     public <T> T load(PropertyMapLoader loader, Class<T> into) {
         loaders.put(into, loader);
-        return conf(into, new FlyconfInvocationHandler(ROOT_PATH, loader.load()));
+        return conf(into, new FlyconfInvocationHandler(into, ROOT_PATH, loader.load()));
     }
 
     @Override
-    public <T> void registerCustomParser(Class<T> type, Function<String, T> parserFunction) {
+    public <T> FlyconfInstance registerCustomParser(Class<T> type, Function<String, T> parserFunction) {
         valueParserMap.put(type, parserFunction);
+        return this;
+    }
+
+    @Override
+    public FlyconfInstance setDefaultConvention(Convention.ConventionAdapter adapter) {
+        this.adapter = adapter;
+        return this;
+    }
+
+    @Override
+    public Convention.ConventionAdapter getConventionAdapter() {
+        return adapter;
     }
 
     private char getSoleCharacter(String s) {
@@ -100,16 +109,18 @@ class DefaultFlyconfInstance implements FlyconfInstance {
 
     private class FlyconfInvocationHandler implements InvocationHandler {
 
+        private final Class<?> root;
         private final String path;
         private final Map<String, Object> propertyMap;
 
-        FlyconfInvocationHandler(String path, Map<String, Object> propertyMap) {
+        FlyconfInvocationHandler(Class<?> configuration, String path, Map<String, Object> propertyMap) {
+            this.root = configuration;
             this.path = path;
             this.propertyMap = propertyMap;
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args) {
+        public Object invoke(Object proxy, Method method, Object[] args) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
             if (method.getParameterCount() > 0) {
                 throw new InvalidConfigurationException("Configuration methods cannot contain parameters!");
             }
@@ -118,7 +129,10 @@ class DefaultFlyconfInstance implements FlyconfInstance {
             var methodType = method.getReturnType();
 
             Property customProperty = method.getAnnotation(Property.class);
-            var property = customProperty != null ? customProperty.value() : methodName;
+            Convention convention = root.getAnnotation(Convention.class);
+            var property = customProperty != null ? customProperty.value() :
+                    convention != null ? convention.adapter().getDeclaredConstructor(new Class[]{}).
+                            newInstance().adapt(methodName) : adapter.adapt(methodName);
 
             if (methodType.isAnnotationPresent(Configuration.class)) {
                 if (methodName.equals(RELOAD)) {
@@ -127,6 +141,7 @@ class DefaultFlyconfInstance implements FlyconfInstance {
                 }
 
                 return conf(methodType, new FlyconfInvocationHandler(
+                        root,
                         formatProperty(path, property),
                         propertyMap
                 ));
@@ -151,6 +166,10 @@ class DefaultFlyconfInstance implements FlyconfInstance {
                         String.format("Mandatory property %s is not found!", property)
                 );
             } else if (value == null) {
+                DefaultValue defaultValue = method.getAnnotation(DefaultValue.class);
+                if (defaultValue != null) {
+                    return valueParserMap.get(methodType).apply(defaultValue.value());
+                }
                 return null;
             }
 

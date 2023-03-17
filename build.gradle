@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.github.olestxcode.flyconf'
-version '0.0.1'
+version '0.0.2'
 
 def javaVersion = JavaVersion.VERSION_19.getMajorVersion().toInteger()
 
@@ -30,6 +30,7 @@ allprojects {
                 dependencies {
                     compileOnly 'org.jetbrains:annotations:24.0.1'
                     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+                    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.2'
                 }
                 test {
                     useJUnitPlatform()

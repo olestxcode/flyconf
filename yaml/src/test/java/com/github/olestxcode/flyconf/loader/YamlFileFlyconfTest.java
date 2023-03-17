@@ -30,6 +30,7 @@ public class YamlFileFlyconfTest {
         InvalidConfigurationException exception = assertThrows(InvalidConfigurationException.class,
                 props::mandatoryProp);
         assertEquals("Mandatory property mandatoryProp is not found!", exception.getMessage());
+        assertEquals("Default", props.def());
 
         var path = props.path();
 

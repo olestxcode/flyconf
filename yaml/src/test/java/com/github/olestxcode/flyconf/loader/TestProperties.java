@@ -1,9 +1,6 @@
 package com.github.olestxcode.flyconf.loader;
 
-import com.github.olestxcode.flyconf.annotation.Configuration;
-import com.github.olestxcode.flyconf.annotation.Mandatory;
-import com.github.olestxcode.flyconf.annotation.MultiValue;
-import com.github.olestxcode.flyconf.annotation.Property;
+import com.github.olestxcode.flyconf.annotation.*;
 
 import java.util.List;
 
@@ -23,9 +20,12 @@ public interface TestProperties {
     @MultiValue
     List<String> myList();
 
-    @MultiValue(elementType = Integer.class)
+    @MultiValue
     List<Integer> ints();
 
     @Mandatory
     String mandatoryProp();
+
+    @DefaultValue("Default")
+    String def();
 }
