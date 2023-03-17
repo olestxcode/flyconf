@@ -137,7 +137,7 @@ class DefaultFlyconfInstance implements FlyconfInstance {
             if (methodType.isAnnotationPresent(Configuration.class)) {
                 if (methodName.equals(RELOAD)) {
                     propertyMap.clear();
-                    propertyMap.putAll(loaders.get(proxy.getClass()).load());
+                    propertyMap.putAll(loaders.get(root).load());
                 }
 
                 return conf(methodType, new FlyconfInvocationHandler(

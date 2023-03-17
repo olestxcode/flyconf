@@ -101,3 +101,13 @@ You can also set it for specific configuration:
 public interface MyKebabConfig {
 }
 ```
+
+### Configuration Reloading
+Flyconf also provides very easy-to-use reloading mechanism. To make your configuration reloadable, just let it extend `Reloadable` interface:
+```
+@Configuration
+public interface MyReloadableConfig extends Reloadable {
+}
+```
+
+Then you will be able to call `MyReloadableConfig#reload` method which automatically reload all settings from source (file).
