@@ -11,7 +11,9 @@ Creating a new Flyconf instance:
 
 `FlyconfInstance` methods:
 * `<T> T load(PropertyMapLoader loader, Class<T> into);`
-* `<T> void registerCustomParser(Class<T> type, Function<String, T> parserFunction);`
+* `<T> FlyconfInstance registerCustomParser(Class<T> type, Function<String, T> parserFunction);`
+* `FlyconfInstance setDefaultConvention(Convention.ConventionAdapter adapter);`
+* `Convention.ConventionAdapter getConventionAdapter();`
 
 ### Configuration Loading
 Let's create a simple .properties configuration interface:
