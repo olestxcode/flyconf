@@ -1,9 +1,23 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
+
+version = rootProject.version
 
 dependencies {
     api project(':core')
 
     implementation 'org.yaml:snakeyaml:2.0'
+}
+
+publishing {
+    publications {
+        yaml(MavenPublication) {
+            groupId = 'com.github.olestxcode'
+            artifactId = 'flyconf-yaml'
+            version = "0.0.4"
+            from components.java
+        }
+    }
 }

@@ -5,26 +5,33 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class YamlConfigurationLoader implements PropertyMapLoader {
 
-    private final InputStream inputStream;
+    private final Supplier<InputStream> inputStreamSupplier;
 
-    public YamlConfigurationLoader(File file) throws FileNotFoundException {
-        this.inputStream = new FileInputStream(file);
+    public YamlConfigurationLoader(File file) {
+        this.inputStreamSupplier = () -> {
+            try {
+                return new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        };
     }
 
-    public YamlConfigurationLoader(InputStream inputStream) {
-        this.inputStream = inputStream;
+    public YamlConfigurationLoader(Supplier<InputStream> inputStreamSupplier) {
+        this.inputStreamSupplier = inputStreamSupplier;
     }
 
     @Override
     public Map<String, Object> load() {
         try {
             Yaml yaml = new Yaml();
-            Map<String, Object> data = yaml.load(inputStream);
+            Map<String, Object> data = yaml.load(inputStreamSupplier.get());
             return data.entrySet().stream()
                     .flatMap(this::flatten)
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

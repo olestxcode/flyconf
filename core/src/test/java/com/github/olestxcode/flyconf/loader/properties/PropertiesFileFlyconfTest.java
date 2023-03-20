@@ -14,6 +14,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,7 +24,7 @@ public class PropertiesFileFlyconfTest {
     @ParameterizedTest
     @ValueSource(strings = {"test", "kebab-test"})
     void testPropertiesConfigurationLoader(String name) {
-        InputStream resource = getClass().getResourceAsStream(String.format("/%s.properties", name));
+        Supplier<InputStream> resource = () -> getClass().getResourceAsStream(String.format("/%s.properties", name));
         FlyconfInstance instance = Flyconf.newInstance();
         if (name.equals("kebab-test")) {
             instance.setDefaultConvention(new KebabCaseAdapter());
@@ -48,11 +49,13 @@ public class PropertiesFileFlyconfTest {
         assertEquals(1, path.k2());
         assertEquals(Duration.of(5, ChronoUnit.SECONDS), path.duration());
         assertEquals(Optional.empty(), path.opt());
+
+        props.reload();
     }
 
     @Test
     void testGreetingPropertiesKebabCase() {
-        InputStream resource = getClass().getResourceAsStream("/kebab-test-greeting.properties");
+        Supplier<InputStream> resource = () -> getClass().getResourceAsStream("/kebab-test-greeting.properties");
         FlyconfInstance instance = Flyconf.newInstance();
         var props = instance.load(new PropertiesConfigurationLoader(resource), KebabTestGreetingProperties.class);
 

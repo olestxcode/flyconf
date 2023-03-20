@@ -29,4 +29,7 @@ public interface TestProperties extends Reloadable {
 
     @DefaultValue("Default")
     String def();
+
+    @Override
+    void reload();
 }

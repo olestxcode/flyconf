@@ -5,7 +5,7 @@ import com.github.olestxcode.flyconf.annotation.*;
 import java.util.List;
 
 @Configuration
-public interface TestProperties {
+public interface TestProperties extends Reloadable {
 
     String key1();
 

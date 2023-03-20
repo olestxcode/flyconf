@@ -5,23 +5,30 @@ import com.github.olestxcode.flyconf.exception.InvalidConfigurationException;
 import java.io.*;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class PropertiesConfigurationLoader implements PropertyMapLoader {
 
-    private final InputStream inputStream;
+    private final Supplier<InputStream> inputStreamSupplier;
 
     public PropertiesConfigurationLoader(File file) throws FileNotFoundException {
-        this.inputStream = new FileInputStream(file);
+        this.inputStreamSupplier = () -> {
+            try {
+                return new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        };
     }
 
-    public PropertiesConfigurationLoader(InputStream inputStream) {
-        this.inputStream = inputStream;
+    public PropertiesConfigurationLoader(Supplier<InputStream> inputStreamSupplier) {
+        this.inputStreamSupplier = inputStreamSupplier;
     }
 
     @Override
     public Map<String, Object> load() {
-        try (inputStream) {
+        try (InputStream inputStream = inputStreamSupplier.get()) {
             Properties properties = new Properties();
             properties.load(inputStream);
             return properties.entrySet()

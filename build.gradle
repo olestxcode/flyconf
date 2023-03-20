@@ -2,8 +2,8 @@ plugins {
     id 'base'
 }
 
-group 'com.github.olestxcode.flyconf'
-version '0.0.3'
+group 'com.github.olestxcode'
+version '0.0.4'
 
 def javaVersion = JavaVersion.VERSION_19.getMajorVersion().toInteger()
 

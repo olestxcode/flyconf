@@ -1,6 +1,20 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
+version = rootProject.version
+
 dependencies {
+}
+
+publishing {
+    publications {
+        core(MavenPublication) {
+            groupId = 'com.github.olestxcode'
+            artifactId = 'flyconf-core'
+            version = "0.0.4"
+            from components.java
+        }
+    }
 }

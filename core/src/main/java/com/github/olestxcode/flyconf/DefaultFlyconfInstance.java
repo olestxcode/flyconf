@@ -4,6 +4,7 @@ import com.github.olestxcode.flyconf.adapter.IdentityAdapter;
 import com.github.olestxcode.flyconf.annotation.*;
 import com.github.olestxcode.flyconf.exception.InvalidConfigurationException;
 import com.github.olestxcode.flyconf.loader.PropertyMapLoader;
+import com.github.olestxcode.flyconf.loader.Reloadable;
 
 import java.lang.reflect.*;
 import java.math.BigDecimal;
@@ -126,6 +127,12 @@ class DefaultFlyconfInstance implements FlyconfInstance {
             }
 
             var methodName = method.getName();
+
+            if (Reloadable.class.isAssignableFrom(root) && methodName.equals(RELOAD)) {
+                propertyMap.clear();
+                propertyMap.putAll(loaders.get(root).load());
+            }
+
             var methodType = method.getReturnType();
 
             Property customProperty = method.getAnnotation(Property.class);
@@ -135,11 +142,6 @@ class DefaultFlyconfInstance implements FlyconfInstance {
                             newInstance().adapt(methodName) : adapter.adapt(methodName);
 
             if (methodType.isAnnotationPresent(Configuration.class)) {
-                if (methodName.equals(RELOAD)) {
-                    propertyMap.clear();
-                    propertyMap.putAll(loaders.get(root).load());
-                }
-
                 return conf(methodType, new FlyconfInvocationHandler(
                         root,
                         formatProperty(path, property),
