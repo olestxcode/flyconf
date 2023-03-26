@@ -5,7 +5,7 @@ plugins {
 group 'com.github.olestxcode'
 version '0.0.4'
 
-def javaVersion = JavaVersion.VERSION_19.getMajorVersion().toInteger()
+def javaVersion = JavaVersion.VERSION_17.getMajorVersion().toInteger()
 
 allprojects {
     pluginManager.withPlugin('org.gradle.java') {
