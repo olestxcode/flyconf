@@ -1,5 +1,8 @@
 package com.github.olestxcode.flyconf.annotation;
 
+import com.github.olestxcode.flyconf.adapter.ConventionAdapter;
+import com.github.olestxcode.flyconf.adapter.StandardAdapter;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -9,9 +12,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Convention {
 
-    Class<? extends ConventionAdapter> adapter();
+    Class<? extends ConventionAdapter> adapterType() default StandardAdapter.class;
 
-    interface ConventionAdapter {
-        String adapt(String methodName);
-    }
+    StandardAdapter adapter() default StandardAdapter.IDENTITY;
 }

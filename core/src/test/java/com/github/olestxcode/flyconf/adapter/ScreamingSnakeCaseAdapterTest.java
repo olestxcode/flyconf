@@ -8,8 +8,6 @@ public class ScreamingSnakeCaseAdapterTest {
 
     @Test
     public void testAdapt() {
-        ScreamingSnakeCaseAdapter adapter = new ScreamingSnakeCaseAdapter();
-        String result = adapter.adapt("myTestString");
-        assertEquals("MY_TEST_STRING", result);
+        assertEquals("MY_TEST_STRING", StandardAdapter.SCREAMING_SNAKE_CASE.adapt("myTestString"));
     }
 }

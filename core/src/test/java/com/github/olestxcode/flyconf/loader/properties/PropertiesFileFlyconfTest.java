@@ -2,7 +2,7 @@ package com.github.olestxcode.flyconf.loader.properties;
 
 import com.github.olestxcode.flyconf.Flyconf;
 import com.github.olestxcode.flyconf.FlyconfInstance;
-import com.github.olestxcode.flyconf.adapter.KebabCaseAdapter;
+import com.github.olestxcode.flyconf.adapter.StandardAdapter;
 import com.github.olestxcode.flyconf.exception.InvalidConfigurationException;
 import com.github.olestxcode.flyconf.loader.PropertiesConfigurationLoader;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ public class PropertiesFileFlyconfTest {
         Supplier<InputStream> resource = () -> getClass().getResourceAsStream(String.format("/%s.properties", name));
         FlyconfInstance instance = Flyconf.newInstance();
         if (name.equals("kebab-test")) {
-            instance.setDefaultConvention(new KebabCaseAdapter());
+            instance.setDefaultConvention(StandardAdapter.KEBAB_CASE);
         }
         var props = instance.load(new PropertiesConfigurationLoader(resource), TestProperties.class);
 
