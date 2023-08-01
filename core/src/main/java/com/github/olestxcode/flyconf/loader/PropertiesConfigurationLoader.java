@@ -12,16 +12,6 @@ public class PropertiesConfigurationLoader implements PropertyMapLoader {
 
     private final Supplier<InputStream> inputStreamSupplier;
 
-    public PropertiesConfigurationLoader(File file) {
-        this.inputStreamSupplier = () -> {
-            try {
-                return new FileInputStream(file);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        };
-    }
-
     public PropertiesConfigurationLoader(Supplier<InputStream> inputStreamSupplier) {
         this.inputStreamSupplier = inputStreamSupplier;
     }
