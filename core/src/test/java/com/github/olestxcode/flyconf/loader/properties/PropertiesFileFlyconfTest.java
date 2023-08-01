@@ -39,7 +39,7 @@ public class PropertiesFileFlyconfTest {
         InvalidConfigurationException exception = assertThrows(InvalidConfigurationException.class,
                 props::mandatoryProp);
         assertEquals(String.format(
-                "Mandatory property %s is not found!", name.equals("test") ? "mandatoryProp" : "mandatory-prop"),
+                        "Mandatory property %s is not found!", name.equals("test") ? "mandatoryProp" : "mandatory-prop"),
                 exception.getMessage());
         assertEquals("Default", props.def());
 

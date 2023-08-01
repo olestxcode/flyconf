@@ -6,16 +6,16 @@ plugins {
 version = rootProject.version
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.26'
-    annotationProcessor 'org.projectlombok:lombok:1.18.26'
-}
+    api project(':core')
 
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
 
 publishing {
     publications {
-        core(MavenPublication) {
+        yaml(MavenPublication) {
             groupId = 'com.github.olestxcode'
-            artifactId = 'flyconf-core'
+            artifactId = 'flyconf-json'
             version = "0.0.4"
             from components.java
         }

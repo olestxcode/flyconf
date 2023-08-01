@@ -24,6 +24,7 @@ class DefaultFlyconfInstance implements FlyconfInstance {
 
     private final Map<Class<?>, PropertyMapLoader> loaders = new HashMap<>();
     private final Map<Class<?>, Function<String, ?>> valueParserMap = new HashMap<>();
+
     {
         valueParserMap.put(String.class, Function.identity());
         valueParserMap.put(Integer.class, Integer::valueOf);
@@ -101,10 +102,11 @@ class DefaultFlyconfInstance implements FlyconfInstance {
         return ROOT_PATH.equals(path) ? property : PATH_FORMAT.formatted(path, property);
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T conf(Class<T> config, InvocationHandler handler) {
         return (T) Proxy.newProxyInstance(
                 config.getClassLoader(),
-                new java.lang.Class[] { config },
+                new Class[]{config},
                 handler);
     }
 

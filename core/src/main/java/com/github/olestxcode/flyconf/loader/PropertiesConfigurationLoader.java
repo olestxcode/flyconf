@@ -12,7 +12,7 @@ public class PropertiesConfigurationLoader implements PropertyMapLoader {
 
     private final Supplier<InputStream> inputStreamSupplier;
 
-    public PropertiesConfigurationLoader(File file) throws FileNotFoundException {
+    public PropertiesConfigurationLoader(File file) {
         this.inputStreamSupplier = () -> {
             try {
                 return new FileInputStream(file);
@@ -34,7 +34,7 @@ public class PropertiesConfigurationLoader implements PropertyMapLoader {
             return properties.entrySet()
                     .stream()
                     .collect(Collectors.toMap(
-                           objectObjectEntry -> objectObjectEntry.getKey().toString(),
+                            objectObjectEntry -> objectObjectEntry.getKey().toString(),
                             Map.Entry::getValue
                     ));
         } catch (IOException e) {
