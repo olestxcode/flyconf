@@ -6,8 +6,7 @@ Lightweight and powerful annotation-based configuration library
 
 First of all, you need to create a new `FlyconfInstance`.
 `FlyconfInstance` is a specifically configured container for your configurations.
-You can use different Flyconf instances if various configurations use different parsers. It allows you to register
-custom parsers separately.
+You can use different Flyconf instances if various configurations use different parsers. It allows you to register custom parsers separately.
 
 Creating a new Flyconf instance:  
 `FlyconfInstance instance = Flyconf.newInstance();`

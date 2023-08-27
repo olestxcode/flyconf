@@ -13,7 +13,7 @@ dependencies {
 
 publishing {
     publications {
-        yaml(MavenPublication) {
+        json(MavenPublication) {
             groupId = 'com.github.olestxcode'
             artifactId = 'flyconf-json'
             version = "0.0.4"
