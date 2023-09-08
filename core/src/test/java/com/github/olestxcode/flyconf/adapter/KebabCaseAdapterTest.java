@@ -8,8 +8,6 @@ public class KebabCaseAdapterTest {
 
     @Test
     public void testAdapt() {
-        KebabCaseAdapter adapter = new KebabCaseAdapter();
-        String result = adapter.adapt("myTestString");
-        assertEquals("my-test-string", result);
+        assertEquals("my-test-string", StandardAdapter.KEBAB_CASE.adapt("myTestString"));
     }
 }

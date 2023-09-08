@@ -15,13 +15,13 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class YamlFileFlyconfTest {
+public class JsonFileFlyconfTest {
 
     @Test
     void testYamlConfigurationLoader() {
-        InputStreamSource resource = new UrlInputStreamSource(getClass().getResource("/test.yaml"));
+        InputStreamSource resource = new UrlInputStreamSource(getClass().getResource("/test.json"));
         FlyconfInstance instance = Flyconf.newInstance();
-        var props = instance.load(new YamlConfigurationLoader(resource), TestProperties.class);
+        var props = instance.load(new JsonConfigurationLoader(resource), TestProperties.class);
 
         assertEquals("val1", props.key1());
         assertEquals("propVal", props.myProp());

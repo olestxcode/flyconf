@@ -12,16 +12,6 @@ public class PropertiesConfigurationLoader implements PropertyMapLoader {
 
     private final Supplier<InputStream> inputStreamSupplier;
 
-    public PropertiesConfigurationLoader(File file) throws FileNotFoundException {
-        this.inputStreamSupplier = () -> {
-            try {
-                return new FileInputStream(file);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        };
-    }
-
     public PropertiesConfigurationLoader(Supplier<InputStream> inputStreamSupplier) {
         this.inputStreamSupplier = inputStreamSupplier;
     }
@@ -34,7 +24,7 @@ public class PropertiesConfigurationLoader implements PropertyMapLoader {
             return properties.entrySet()
                     .stream()
                     .collect(Collectors.toMap(
-                           objectObjectEntry -> objectObjectEntry.getKey().toString(),
+                            objectObjectEntry -> objectObjectEntry.getKey().toString(),
                             Map.Entry::getValue
                     ));
         } catch (IOException e) {

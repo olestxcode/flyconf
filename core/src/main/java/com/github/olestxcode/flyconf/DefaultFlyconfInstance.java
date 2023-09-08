@@ -1,19 +1,20 @@
 package com.github.olestxcode.flyconf;
 
-import com.github.olestxcode.flyconf.adapter.IdentityAdapter;
+import com.github.olestxcode.flyconf.adapter.ConventionAdapter;
+import com.github.olestxcode.flyconf.adapter.StandardAdapter;
 import com.github.olestxcode.flyconf.annotation.*;
 import com.github.olestxcode.flyconf.exception.InvalidConfigurationException;
 import com.github.olestxcode.flyconf.loader.PropertyMapLoader;
 import com.github.olestxcode.flyconf.loader.Reloadable;
 
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Proxy;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 class DefaultFlyconfInstance implements FlyconfInstance {
@@ -22,8 +23,11 @@ class DefaultFlyconfInstance implements FlyconfInstance {
     private static final String PATH_FORMAT = "%s.%s";
     private static final String RELOAD = "reload";
 
+    private static final Map<Class<? extends ConventionAdapter>, ConventionAdapter> ADAPTERS = new IdentityHashMap<>();
+
     private final Map<Class<?>, PropertyMapLoader> loaders = new HashMap<>();
     private final Map<Class<?>, Function<String, ?>> valueParserMap = new HashMap<>();
+
     {
         valueParserMap.put(String.class, Function.identity());
         valueParserMap.put(Integer.class, Integer::valueOf);
@@ -62,7 +66,7 @@ class DefaultFlyconfInstance implements FlyconfInstance {
         valueParserMap.put(ZoneOffset.class, ZoneOffset::of);
     }
 
-    private Convention.ConventionAdapter adapter = new IdentityAdapter();
+    private ConventionAdapter defaultAdapter = StandardAdapter.IDENTITY;
 
     @Override
     public <T> T load(PropertyMapLoader loader, Class<T> into) {
@@ -77,14 +81,14 @@ class DefaultFlyconfInstance implements FlyconfInstance {
     }
 
     @Override
-    public FlyconfInstance setDefaultConvention(Convention.ConventionAdapter adapter) {
-        this.adapter = adapter;
+    public FlyconfInstance setDefaultConvention(ConventionAdapter adapter) {
+        this.defaultAdapter = adapter;
         return this;
     }
 
     @Override
-    public Convention.ConventionAdapter getConventionAdapter() {
-        return adapter;
+    public ConventionAdapter getConventionAdapter() {
+        return defaultAdapter;
     }
 
     private char getSoleCharacter(String s) {
@@ -101,10 +105,11 @@ class DefaultFlyconfInstance implements FlyconfInstance {
         return ROOT_PATH.equals(path) ? property : PATH_FORMAT.formatted(path, property);
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T conf(Class<T> config, InvocationHandler handler) {
         return (T) Proxy.newProxyInstance(
                 config.getClassLoader(),
-                new java.lang.Class[] { config },
+                new Class[]{config},
                 handler);
     }
 
@@ -121,7 +126,7 @@ class DefaultFlyconfInstance implements FlyconfInstance {
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        public Object invoke(Object proxy, Method method, Object[] args) {
             if (method.getParameterCount() > 0) {
                 throw new InvalidConfigurationException("Configuration methods cannot contain parameters!");
             }
@@ -135,11 +140,10 @@ class DefaultFlyconfInstance implements FlyconfInstance {
 
             var methodType = method.getReturnType();
 
-            Property customProperty = method.getAnnotation(Property.class);
-            Convention convention = root.getAnnotation(Convention.class);
-            var property = customProperty != null ? customProperty.value() :
-                    convention != null ? convention.adapter().getDeclaredConstructor(new Class[]{}).
-                            newInstance().adapt(methodName) : adapter.adapt(methodName);
+            var customProperty = method.getAnnotation(Property.class);
+            var convention = root.getAnnotation(Convention.class);
+
+            var property = customProperty == null ? getAdapter(convention).adapt(methodName) : customProperty.value();
 
             if (methodType.isAnnotationPresent(Configuration.class)) {
                 return conf(methodType, new FlyconfInvocationHandler(
@@ -193,5 +197,18 @@ class DefaultFlyconfInstance implements FlyconfInstance {
 
             return valueParserMap.get(methodType).apply(value.toString());
         }
+    }
+
+    private ConventionAdapter getAdapter(Convention convention) {
+        if (convention == null) return defaultAdapter;
+        if (convention.adapterType() == StandardAdapter.class) return convention.adapter();
+
+        return ADAPTERS.computeIfAbsent(convention.adapterType(), type -> {
+            try {
+                return type.getDeclaredConstructor(new Class[0]).newInstance();
+            } catch (Exception exception) {
+                throw new RuntimeException(exception);
+            }
+        });
     }
 }

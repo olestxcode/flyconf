@@ -1,4 +1,5 @@
 rootProject.name = 'flyconf'
 include 'yaml'
 include 'core'
+include 'json'
 
